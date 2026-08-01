@@ -7,6 +7,7 @@ export type LayerCategory =
   | "Aerospace"
   | "Energy & Infrastructure"
   | "Cyber & Networks"
+  | "Influence & Info-War"
   | "Economy & Trade"
   | "Hazards & Health";
 
@@ -27,7 +28,18 @@ export type RenderStyle =
   | { type: "circle"; color: string; radius?: number }
   | { type: "icon"; color: string; symbol: string }
   | { type: "line"; color: string; width?: number }
-  | { type: "heat"; color: string };
+  | { type: "heat"; color: string }
+  | {
+      /** Circle whose radius & colour interpolate from a numeric property. */
+      type: "graduated";
+      field: string;
+      min: number;
+      max: number;
+      colorLow: string;
+      colorHigh: string;
+      radiusMin?: number;
+      radiusMax?: number;
+    };
 
 export interface LayerDefinition {
   id: string;

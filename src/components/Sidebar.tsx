@@ -1,6 +1,12 @@
 import { useMemo } from "react";
 import { CATEGORIES, LAYERS } from "../layers";
+import type { RenderStyle } from "../types";
 import { useStore } from "../store";
+
+/** A representative colour for the sidebar swatch. */
+function swatchColor(style: RenderStyle): string {
+  return style.type === "graduated" ? style.colorHigh : style.color;
+}
 
 export function Sidebar() {
   const active = useStore((s) => s.activeLayers);
@@ -51,7 +57,7 @@ export function Sidebar() {
                     <input type="checkbox" checked={on} onChange={() => toggle(l.id)} />
                     <span
                       className="swatch"
-                      style={{ background: l.style.color }}
+                      style={{ background: swatchColor(l.style) }}
                       aria-hidden
                     />
                     <span className="layer-label">

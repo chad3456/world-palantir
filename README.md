@@ -25,6 +25,7 @@ Layers are grouped into categories in the left sidebar. Toggle any combination.
 | **Aerospace** | Commercial aviation · Military aviation · Space stations · Military / recon satellites · Navigation satellites (GNSS) · Starlink constellation · Spaceports |
 | **Energy & Infrastructure** | Oil & gas pipelines · Storage facilities · AI / hyperscale datacenters · Manufacturing units |
 | **Cyber & Networks** | Cyber threats · GPS jamming / spoofing · Internet outages / disruption |
+| **Influence & Info-War** | Info-War / PsyOps index (composite, per country) |
 | **Economy & Trade** | US tariffs (by country) |
 | **Hazards & Health** | Earthquakes (24h) · Disease outbreaks |
 
@@ -74,6 +75,7 @@ Without `VITE_AISSTREAM_KEY` the maritime layers render an empty state with a no
 
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — how the app is structured.
 - [`docs/DATA_SOURCES.md`](docs/DATA_SOURCES.md) — provenance & licence of every layer.
+- [`docs/PSYOPS_INDEX.md`](docs/PSYOPS_INDEX.md) — the Info-War index methodology.
 - [`docs/SETUP.md`](docs/SETUP.md) — local dev, keys, deployment, troubleshooting.
 - [`docs/AGENTS.md`](docs/AGENTS.md) — how data was aggregated with agents.
 

@@ -15,6 +15,7 @@ import {
   fetchWarMonitor,
 } from "./lib/sources/gdelt";
 import { fetchEarthquakes, fetchGpsJamming } from "./lib/sources/misc";
+import { fetchPsyopsIndex } from "./lib/sources/psyops";
 import { fetchTankers, fetchVessels } from "./lib/sources/ais";
 import {
   fetchChokepoints,
@@ -348,6 +349,31 @@ export const LAYERS: LayerDefinition[] = [
     style: { type: "circle", color: "#ff8c66", radius: 5 },
     refreshMs: 15 * MIN,
     fetch: fetchInternetOutages,
+  },
+
+  // ── Influence & Info-War ───────────────────────────────────────────────────
+  {
+    id: "psyops-index",
+    label: "Info-War / PsyOps index",
+    category: "Influence & Info-War",
+    kind: "live",
+    description:
+      "Composite information-warfare index per country: Oxford cyber-troop capacity + Freedom on the Net + foreign-influence-ops + live GDELT info-ops reporting (0–100).",
+    source: "Oxford OII + Freedom House + GDELT (composite)",
+    sourceUrl: "https://demtech.oii.ox.ac.uk/",
+    style: {
+      type: "graduated",
+      field: "index",
+      min: 0,
+      max: 100,
+      colorLow: "#2a4d69",
+      colorHigh: "#ff2a2a",
+      radiusMin: 5,
+      radiusMax: 22,
+    },
+    refreshMs: 30 * MIN,
+    fetch: fetchPsyopsIndex,
+    titleField: "title",
   },
 
   // ── Economy & Trade ────────────────────────────────────────────────────────

@@ -155,7 +155,37 @@ export function MapView() {
     }
     map.addSource(srcId, { type: "geojson", data: geojson as any });
     const def = LAYERS_BY_ID[id];
-    if (def.style.type === "line") {
+    if (def.style.type === "graduated") {
+      const s = def.style;
+      map.addLayer({
+        id: `lyr-${id}`,
+        type: "circle",
+        source: srcId,
+        paint: {
+          "circle-color": [
+            "interpolate",
+            ["linear"],
+            ["to-number", ["get", s.field], s.min],
+            s.min,
+            s.colorLow,
+            s.max,
+            s.colorHigh,
+          ] as any,
+          "circle-radius": [
+            "interpolate",
+            ["linear"],
+            ["to-number", ["get", s.field], s.min],
+            s.min,
+            s.radiusMin ?? 4,
+            s.max,
+            s.radiusMax ?? 20,
+          ] as any,
+          "circle-opacity": 0.82,
+          "circle-stroke-color": "#000",
+          "circle-stroke-width": 0.6,
+        },
+      });
+    } else if (def.style.type === "line") {
       map.addLayer({
         id: `lyr-${id}-line`,
         type: "line",
