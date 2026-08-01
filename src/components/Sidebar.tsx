@@ -5,7 +5,9 @@ import { useStore } from "../store";
 
 /** A representative colour for the sidebar swatch. */
 function swatchColor(style: RenderStyle): string {
-  return style.type === "graduated" ? style.colorHigh : style.color;
+  if (style.type === "graduated") return style.colorHigh;
+  if (style.type === "data") return style.fallback;
+  return style.color;
 }
 
 export function Sidebar() {

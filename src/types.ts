@@ -7,6 +7,7 @@ export type LayerCategory =
   | "Aerospace"
   | "Energy & Infrastructure"
   | "Cyber & Networks"
+  | "Commercial Space"
   | "Influence & Info-War"
   | "Economy & Trade"
   | "Hazards & Health";
@@ -39,6 +40,13 @@ export type RenderStyle =
       colorHigh: string;
       radiusMin?: number;
       radiusMax?: number;
+    }
+  | {
+      /** Circle coloured from a per-feature colour property (e.g. by operator). */
+      type: "data";
+      colorField: string;
+      fallback: string;
+      radius?: number;
     };
 
 export interface LayerDefinition {

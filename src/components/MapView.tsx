@@ -53,10 +53,18 @@ export function MapView() {
     mapRef.current = map;
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
 
-    map.on("load", () => {
+    // Gate data layers on the STYLE being ready, not on `load`. `load` waits for
+    // the first complete render, so a slow or blocked basemap tile host would
+    // otherwise leave every data layer dormant and the map empty.
+    const markReady = () => {
+      if (styleReady.current) return;
+      if (!map.isStyleLoaded()) return;
       styleReady.current = true;
       reconcile();
-    });
+    };
+    map.on("style.load", markReady);
+    map.on("styledata", markReady);
+    map.on("load", markReady);
 
     // Popup on click across all our data layers.
     map.on("click", (e) => {
@@ -183,6 +191,20 @@ export function MapView() {
           "circle-opacity": 0.82,
           "circle-stroke-color": "#000",
           "circle-stroke-width": 0.6,
+        },
+      });
+    } else if (def.style.type === "data") {
+      const s = def.style;
+      map.addLayer({
+        id: `lyr-${id}`,
+        type: "circle",
+        source: srcId,
+        paint: {
+          "circle-color": ["coalesce", ["get", s.colorField], s.fallback] as any,
+          "circle-radius": s.radius ?? 2.2,
+          "circle-opacity": 0.85,
+          "circle-stroke-color": "#000",
+          "circle-stroke-width": 0.3,
         },
       });
     } else if (def.style.type === "line") {

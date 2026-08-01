@@ -82,7 +82,8 @@ npm run preview     # serve dist/ locally to verify
 | A live layer shows `⚠` | Provider rate-limited or temporarily down. OpenSky and GDELT throttle anonymous traffic — wait, or add an OpenSky account. |
 | Flights empty when zoomed out | OpenSky bounding-box queries return little at world scale; zoom into a region. |
 | Maritime layer shows `🔑` | Missing `VITE_AISSTREAM_KEY`. |
-| No basemap tiles | The CARTO tile host is blocked by your network/CSP. Allowlist `*.basemaps.cartocdn.com` or swap the tile URL in `MapView.tsx`. |
+| No basemap tiles | The CARTO tile host is blocked by your network/CSP. Allowlist `*.basemaps.cartocdn.com` or swap the tile URL in `MapView.tsx`. Data layers still load — they are deliberately not gated on tiles (see below). |
+| Map renders but **no layer ever loads data** | Fixed. The engine used to wait for MapLibre's `load` event, which only fires after basemap tiles finish rendering — so a blocked or slow tile host left every data layer dormant. It now activates on `style.load`/`styledata`, independent of tiles. |
 | Satellites take a moment | First load downloads TLE catalogues from CelesTrak; cached 30 min thereafter. |
 | CORS error in console for an enrichment key | Cloudflare Radar / abuse.ch may need a small proxy; the default GDELT-based layers need none. |
 

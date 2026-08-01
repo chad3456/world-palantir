@@ -4,7 +4,6 @@ import {
   fetchGnss,
   fetchMilitarySats,
   fetchSpaceStations,
-  fetchStarlink,
 } from "./lib/sources/satellites";
 import {
   fetchConflictZones,
@@ -16,6 +15,11 @@ import {
 } from "./lib/sources/gdelt";
 import { fetchEarthquakes, fetchGpsJamming } from "./lib/sources/misc";
 import { fetchPsyopsIndex } from "./lib/sources/psyops";
+import {
+  OPERATORS,
+  fetchAllCommercial,
+  fetchOperator,
+} from "./lib/sources/commercial-sats";
 import { fetchTankers, fetchVessels } from "./lib/sources/ais";
 import {
   fetchChokepoints,
@@ -244,18 +248,6 @@ export const LAYERS: LayerDefinition[] = [
     fetch: fetchGnss,
   },
   {
-    id: "sats-starlink",
-    label: "Starlink constellation",
-    category: "Aerospace",
-    kind: "live",
-    description: "SpaceX Starlink — live ground positions (SGP4).",
-    source: "CelesTrak (starlink group)",
-    sourceUrl: "https://celestrak.org/",
-    style: { type: "circle", color: "#88aaff", radius: 1.5 },
-    refreshMs: 30_000,
-    fetch: fetchStarlink,
-  },
-  {
     id: "spaceports",
     label: "Spaceports",
     category: "Aerospace",
@@ -350,6 +342,37 @@ export const LAYERS: LayerDefinition[] = [
     refreshMs: 15 * MIN,
     fetch: fetchInternetOutages,
   },
+
+  // ── Commercial Space ───────────────────────────────────────────────────────
+  {
+    id: "sats-commercial",
+    label: "Private satellites (all operators)",
+    category: "Commercial Space",
+    kind: "live",
+    description:
+      "Every tracked commercial constellation at once, coloured by operator — live SGP4 ground positions. Operators that are unreachable are named in the status note rather than omitted silently.",
+    source: "CelesTrak GP element sets",
+    sourceUrl: "https://celestrak.org/NORAD/elements/",
+    style: { type: "data", colorField: "color", fallback: "#8fb4ff", radius: 1.8 },
+    refreshMs: 30_000,
+    fetch: fetchAllCommercial,
+  },
+  ...OPERATORS.map(
+    (op): LayerDefinition => ({
+      id: `sat-op-${op.id}`,
+      label: op.name,
+      category: "Commercial Space",
+      kind: "live",
+      description: `${op.company} (${op.country}) — ${op.purpose}, ${op.orbit}.${
+        op.notes ? " " + op.notes : ""
+      }`,
+      source: `CelesTrak GROUP=${op.group}`,
+      sourceUrl: `https://celestrak.org/NORAD/elements/gp.php?GROUP=${op.group}&FORMAT=tle`,
+      style: { type: "circle", color: op.color, radius: op.orbit === "GEO" ? 3 : 2 },
+      refreshMs: 30_000,
+      fetch: fetchOperator(op.id),
+    })
+  ),
 
   // ── Influence & Info-War ───────────────────────────────────────────────────
   {

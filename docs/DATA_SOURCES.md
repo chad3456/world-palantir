@@ -19,7 +19,8 @@ Where a figure is a dated estimate (arsenals, tariffs) that is stated explicitly
 | Space stations | CelesTrak + SGP4 | GP `GROUP=stations` TLE, propagated | 20 s | — |
 | Military / recon satellites | CelesTrak + SGP4 | GP `GROUP=military` TLE | 30 s | — |
 | Navigation satellites (GNSS) | CelesTrak + SGP4 | GP `GROUP=gnss` TLE | 30 s | — |
-| Starlink constellation | CelesTrak + SGP4 | GP `GROUP=starlink` TLE | 30 s | — |
+| Private satellites (all operators) | CelesTrak + SGP4 | 12 operator groups, merged & colour-coded | 30 s | — |
+| Per-operator layers (Starlink, OneWeb, Kuiper, Qianfan, Planet, Spire, Iridium NEXT, Globalstar, ORBCOMM, Intelsat, SES, Swarm) | CelesTrak + SGP4 | GP `GROUP=<operator>` TLE | 30 s | — |
 | Maritime vessels / ship traffic | aisstream.io | WebSocket `PositionReport` (viewport bbox) | stream | **required** |
 | Oil tankers (live) | aisstream.io | WebSocket, AIS ship-type 80–89 | stream | **required** |
 | GPS jamming / spoofing | GPSJam.org | daily aggregated GeoJSON | 30 min | — |
@@ -34,6 +35,10 @@ Where a figure is a dated estimate (arsenals, tariffs) that is stated explicitly
   are dark or spoofing.
 - **Military / recon satellites** use CelesTrak's `military` group (catalogued
   objects). Classified payloads that are not catalogued cannot be shown.
+- **Commercial constellations** are never given hard-coded sizes — the count next
+  to each layer is whatever the catalogue returns at that moment, because these
+  fleets change weekly. Two group identifiers are unconfirmed and fail closed;
+  see `SATELLITE_OPERATORS.md` for the registry and its verification status.
 - **Cyber / outages / disease / GPS-jamming reports** from GDELT are *news-event*
   geolocations — i.e. where the reporting places the event. GPS jamming also has a
   dedicated **measured** layer from GPSJam (aggregated aircraft navigation
