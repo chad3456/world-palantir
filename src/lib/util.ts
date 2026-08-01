@@ -26,6 +26,44 @@ export function env(key: string): string {
   return typeof v === "string" ? v.trim() : "";
 }
 
+// ── CORS handling ────────────────────────────────────────────────────────────
+// Some upstream APIs (GDELT, OpenSky) do not send CORS headers, so the browser
+// blocks direct fetches ("Failed to fetch"). We route those hosts through a
+// same-origin proxy:
+//   • dev (`npm run dev`)  → Vite dev-server proxy (see vite.config.ts)
+//   • prod                 → optional VITE_CORS_PROXY prefix (see docs/SETUP.md)
+// Hosts that DO support CORS (CelesTrak, USGS, GitHub) are left untouched.
+const DEV = !!(import.meta as any).env?.DEV;
+
+const DEV_PROXY_PREFIX: Record<string, string> = {
+  "api.gdeltproject.org": "/api-gdelt",
+  "opensky-network.org": "/api-opensky",
+  "celestrak.org": "/api-celestrak",
+  "earthquake.usgs.gov": "/api-usgs",
+  "gpsjam.org": "/api-gpsjam",
+};
+
+export function proxify(url: string): string {
+  if (!/^https?:\/\//i.test(url)) return url; // already relative (same-origin)
+  let u: URL;
+  try {
+    u = new URL(url);
+  } catch {
+    return url;
+  }
+  if (DEV) {
+    const prefix = DEV_PROXY_PREFIX[u.hostname];
+    if (prefix) return prefix + u.pathname + u.search;
+    return url;
+  }
+  // Production: prepend a configured CORS proxy for the hosts that need one.
+  const proxy = env("VITE_CORS_PROXY");
+  if (proxy && DEV_PROXY_PREFIX[u.hostname]) {
+    return proxy + encodeURIComponent(url);
+  }
+  return url;
+}
+
 /** Fetch JSON with timeout + abort support. Throws on non-2xx. */
 export async function getJSON<T = unknown>(
   url: string,
@@ -36,7 +74,7 @@ export async function getJSON<T = unknown>(
   const t = setTimeout(() => ctrl.abort(), timeoutMs);
   if (signal) signal.addEventListener("abort", () => ctrl.abort(), { once: true });
   try {
-    const res = await fetch(url, { headers, signal: ctrl.signal });
+    const res = await fetch(proxify(url), { headers, signal: ctrl.signal });
     if (!res.ok) throw new Error(`HTTP ${res.status} for ${shortUrl(url)}`);
     return (await res.json()) as T;
   } finally {
@@ -53,7 +91,7 @@ export async function getText(
   const t = setTimeout(() => ctrl.abort(), timeoutMs);
   if (signal) signal.addEventListener("abort", () => ctrl.abort(), { once: true });
   try {
-    const res = await fetch(url, { signal: ctrl.signal });
+    const res = await fetch(proxify(url), { signal: ctrl.signal });
     if (!res.ok) throw new Error(`HTTP ${res.status} for ${shortUrl(url)}`);
     return await res.text();
   } finally {

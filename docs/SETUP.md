@@ -41,6 +41,23 @@ VITE_ACLED_EMAIL=
 Without the key the maritime layers show: *"Set VITE_AISSTREAM_KEY … to stream live
 AIS vessels."* — they never display fake ships.
 
+## CORS & the API proxy (important)
+
+Two upstream APIs — **GDELT** (news, conflicts, war, protests, cyber, outages,
+disease) and **OpenSky** (flights) — do not send CORS headers, so a browser
+cannot call them directly (you'd see `Failed to fetch`). The app handles this:
+
+- **`npm run dev` and `npm run preview`** — a same-origin proxy is built into the
+  Vite config (`/api-gdelt`, `/api-opensky`, …). **No setup needed**; everything
+  works out of the box locally.
+- **Static production deploy** — set `VITE_CORS_PROXY` in `.env` to a CORS proxy
+  prefix that accepts the target URL, e.g. `https://my-proxy.example/?url=`. Only
+  the CORS-blocked hosts are routed through it; CelesTrak/USGS (which support CORS)
+  always go direct. A 10-line Cloudflare Worker or Vercel edge function is enough.
+
+CelesTrak, USGS, GitHub (reference data) and the aisstream.io WebSocket all work
+without any proxy.
+
 ## Production build & deploy
 
 ```bash
