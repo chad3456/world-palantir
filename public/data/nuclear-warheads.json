@@ -1,0 +1,11 @@
+[
+  {"country":"Russia","iso3":"RUS","capital_lat":55.7558,"capital_lon":37.6173,"total_warheads":5580,"deployed_warheads":1710,"source_note":"FAS/SIPRI 2024 estimates; total inventory incl. retired-pending-dismantlement is larger (~4380 stockpile)."},
+  {"country":"United States","iso3":"USA","capital_lat":38.9072,"capital_lon":-77.0369,"total_warheads":5044,"deployed_warheads":1670,"source_note":"FAS/SIPRI 2024 estimates; stockpile ~3700, remainder retired awaiting dismantlement."},
+  {"country":"China","iso3":"CHN","capital_lat":39.9042,"capital_lon":116.4074,"total_warheads":500,"deployed_warheads":24,"source_note":"FAS/SIPRI 2024 estimates; arsenal expanding rapidly, projected to grow over the decade."},
+  {"country":"France","iso3":"FRA","capital_lat":48.8566,"capital_lon":2.3522,"total_warheads":290,"deployed_warheads":280,"source_note":"FAS/SIPRI 2024 estimates."},
+  {"country":"United Kingdom","iso3":"GBR","capital_lat":51.5074,"capital_lon":-0.1278,"total_warheads":225,"deployed_warheads":120,"source_note":"FAS/SIPRI 2024 estimates; declared ceiling raised to 260."},
+  {"country":"Pakistan","iso3":"PAK","capital_lat":33.6844,"capital_lon":73.0479,"total_warheads":170,"deployed_warheads":0,"source_note":"FAS/SIPRI 2024 estimates; warheads believed stored separately, not deployed."},
+  {"country":"India","iso3":"IND","capital_lat":28.6139,"capital_lon":77.2090,"total_warheads":172,"deployed_warheads":0,"source_note":"FAS/SIPRI 2024 estimates; arsenal slowly growing, warheads largely in central storage."},
+  {"country":"Israel","iso3":"ISR","capital_lat":31.7683,"capital_lon":35.2137,"total_warheads":90,"deployed_warheads":0,"source_note":"FAS/SIPRI 2024 estimates; Israel maintains official ambiguity and does not confirm its arsenal."},
+  {"country":"North Korea","iso3":"PRK","capital_lat":39.0392,"capital_lon":125.7625,"total_warheads":50,"deployed_warheads":0,"source_note":"FAS/SIPRI 2024 estimates; figure is approximate, assessed potential fissile material for ~70-90 weapons."}
+]

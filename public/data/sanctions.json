@@ -1,0 +1,16 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [37.6173, 55.7558] }, "properties": { "title": "Russia — comprehensive sanctions", "country": "Russia", "programs": "US/EU/UK/G7 sanctions post-2022 (finance, energy, tech, oligarchs)", "kind": "Sanctions", "source": "OFAC/EU/UK 2022–2025" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [51.389, 35.6892] }, "properties": { "title": "Iran — comprehensive sanctions", "country": "Iran", "programs": "US comprehensive embargo; UN/EU nuclear & missile sanctions", "kind": "Sanctions", "source": "OFAC/EU/UN" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [125.7625, 39.0392] }, "properties": { "title": "North Korea — comprehensive sanctions", "country": "North Korea", "programs": "UN Security Council + US/EU sanctions (WMD, arms, trade)", "kind": "Sanctions", "source": "UNSC/OFAC/EU" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [36.2765, 33.5138] }, "properties": { "title": "Syria — broad sanctions", "country": "Syria", "programs": "US/EU sanctions (Caesar Act); partial easing under review 2025", "kind": "Sanctions", "source": "OFAC/EU" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [-82.3666, 23.1136] }, "properties": { "title": "Cuba — embargo", "country": "Cuba", "programs": "US trade embargo; State Sponsor of Terrorism designation", "kind": "Sanctions", "source": "OFAC" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [-66.9036, 10.4806] }, "properties": { "title": "Venezuela — sectoral sanctions", "country": "Venezuela", "programs": "US sanctions on PDVSA, gold, government officials", "kind": "Sanctions", "source": "OFAC" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [27.5667, 53.9] }, "properties": { "title": "Belarus — sanctions", "country": "Belarus", "programs": "US/EU/UK sanctions (2020 election, Russia war support)", "kind": "Sanctions", "source": "OFAC/EU/UK" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [96.1951, 16.8409] }, "properties": { "title": "Myanmar — sanctions", "country": "Myanmar", "programs": "US/EU/UK sanctions on junta following 2021 coup", "kind": "Sanctions", "source": "OFAC/EU/UK" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [69.2075, 34.5553] }, "properties": { "title": "Afghanistan — restrictions", "country": "Afghanistan", "programs": "Sanctions on Taliban leadership; asset freezes", "kind": "Sanctions", "source": "OFAC/UNSC" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [15.0444, -12.7587] }, "properties": { "title": "Zimbabwe — targeted sanctions", "country": "Zimbabwe", "programs": "US targeted sanctions on individuals (revised 2024)", "kind": "Sanctions", "source": "OFAC" } },
+    { "type": "Feature", "geometry": { "type": "Point", "coordinates": [33.7741, 12.8628] }, "properties": { "title": "Sudan — sanctions", "country": "Sudan", "programs": "US sanctions tied to the 2023 conflict and rival factions", "kind": "Sanctions", "source": "OFAC" } }
+  ]
+}

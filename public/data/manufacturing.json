@@ -1,0 +1,30 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[120.997,24.774]},"properties":{"name":"TSMC Fab (Hsinchu Science Park)","sector":"semiconductors","company":"TSMC","country":"Taiwan"}},
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[120.273,23.108]},"properties":{"name":"TSMC Fab 18 (Tainan / Southern Taiwan Science Park)","sector":"semiconductors","company":"TSMC","country":"Taiwan"}},
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[-112.058,33.726]},"properties":{"name":"TSMC Arizona (Phoenix)","sector":"semiconductors","company":"TSMC","country":"United States"}},
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[126.83,37.21]},"properties":{"name":"Samsung Hwaseong Campus","sector":"semiconductors","company":"Samsung","country":"South Korea"}},
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[127.06,37.0]},"properties":{"name":"Samsung Pyeongtaek Campus","sector":"semiconductors","company":"Samsung","country":"South Korea"}},
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[-97.41,30.59]},"properties":{"name":"Samsung Taylor Fab (Texas)","sector":"semiconductors","company":"Samsung","country":"United States"}},
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[-122.945,45.539]},"properties":{"name":"Intel Hillsboro (Ronler Acres)","sector":"semiconductors","company":"Intel","country":"United States"}},
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[-82.74,40.13]},"properties":{"name":"Intel Ohio (New Albany / Licking County)","sector":"semiconductors","company":"Intel","country":"United States"}},
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[-111.93,33.34]},"properties":{"name":"Intel Chandler (Ocotillo Campus)","sector":"semiconductors","company":"Intel","country":"United States"}},
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[113.66,34.72]},"properties":{"name":"Foxconn Zhengzhou (iPhone City)","sector":"electronics assembly","company":"Foxconn","country":"China"}},
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[5.412,51.42]},"properties":{"name":"ASML Veldhoven HQ & Fab","sector":"semiconductor equipment","company":"ASML","country":"Netherlands"}},
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[121.59,31.32]},"properties":{"name":"SMIC Shanghai (Zhangjiang)","sector":"semiconductors","company":"SMIC","country":"China"}},
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[131.9,34.05]},"properties":{"name":"Tokyo Electron / Japan semiconductor cluster (Kyushu - JASM/TSMC Kumamoto)","sector":"semiconductors","company":"JASM (TSMC/Sony/Denso)","country":"Japan"}},
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[-121.946,37.493]},"properties":{"name":"Tesla Fremont Factory","sector":"automotive","company":"Tesla","country":"United States"}},
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[-97.617,30.222]},"properties":{"name":"Tesla Gigafactory Texas (Austin)","sector":"automotive","company":"Tesla","country":"United States"}},
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[13.79,52.39]},"properties":{"name":"Tesla Gigafactory Berlin-Brandenburg","sector":"automotive","company":"Tesla","country":"Germany"}},
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[121.79,30.97]},"properties":{"name":"Tesla Gigafactory Shanghai","sector":"automotive","company":"Tesla","country":"China"}},
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[-119.74,39.54]},"properties":{"name":"Tesla Gigafactory Nevada","sector":"batteries/automotive","company":"Tesla / Panasonic","country":"United States"}},
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[114.07,22.65]},"properties":{"name":"BYD Headquarters & Plant (Shenzhen)","sector":"automotive/batteries","company":"BYD","country":"China"}},
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[137.156,35.083]},"properties":{"name":"Toyota Motomachi Plant (Toyota City)","sector":"automotive","company":"Toyota","country":"Japan"}},
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[9.95,52.43]},"properties":{"name":"Volkswagen Wolfsburg Plant","sector":"automotive","company":"Volkswagen","country":"Germany"}},
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[127.45,37.0]},"properties":{"name":"SK Hynix Icheon Campus","sector":"semiconductors","company":"SK Hynix","country":"South Korea"}},
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[8.42,49.49]},"properties":{"name":"BASF Ludwigshafen (Verbund site)","sector":"chemicals","company":"BASF","country":"Germany"}},
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[126.62,37.45]},"properties":{"name":"Samsung Electronics Giheung Campus","sector":"semiconductors","company":"Samsung","country":"South Korea"}},
+    {"type":"Feature","geometry":{"type":"Point","coordinates":[121.18,24.94]},"properties":{"name":"Foxconn Tucheng / New Taipei (HQ)","sector":"electronics","company":"Foxconn (Hon Hai)","country":"Taiwan"}}
+  ]
+}
