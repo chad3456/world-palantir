@@ -1,0 +1,461 @@
+<title>World Palantir — Strategic Atlas</title>
+<style>
+  :root{
+    --ink:#070c15; --panel:#0d1420; --panel2:#131c2c; --line:#1e2a3f;
+    --txt:#dbe4f0; --dim:#8496b0; --accent:#f0a44a;
+    --ocean:#070c15; --land:#16202f; --coast:#33415a; --grat:#101a29;
+    --shadow:0 8px 30px rgba(0,0,0,.45);
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --sans:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  }
+  @media (prefers-color-scheme:light){
+    :root{
+      --ink:#eef1f5; --panel:#ffffff; --panel2:#f5f7fa; --line:#d3dae3;
+      --txt:#131f2e; --dim:#5c6d82; --accent:#b0651a;
+      --ocean:#dde5ed; --land:#fbfcfe; --coast:#93a4b8; --grat:#e6ecf2;
+      --shadow:0 6px 24px rgba(28,45,70,.12);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#070c15; --panel:#0d1420; --panel2:#131c2c; --line:#1e2a3f;
+    --txt:#dbe4f0; --dim:#8496b0; --accent:#f0a44a;
+    --ocean:#070c15; --land:#16202f; --coast:#33415a; --grat:#101a29;
+    --shadow:0 8px 30px rgba(0,0,0,.45);
+  }
+  :root[data-theme="light"]{
+    --ink:#eef1f5; --panel:#ffffff; --panel2:#f5f7fa; --line:#d3dae3;
+    --txt:#131f2e; --dim:#5c6d82; --accent:#b0651a;
+    --ocean:#dde5ed; --land:#fbfcfe; --coast:#93a4b8; --grat:#e6ecf2;
+    --shadow:0 6px 24px rgba(28,45,70,.12);
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ink);color:var(--txt);font-family:var(--sans);
+       font-size:13px;-webkit-font-smoothing:antialiased}
+  .app{display:flex;flex-direction:column;height:100vh;min-height:0;overflow:hidden}
+
+  /* ── masthead ─────────────────────────────────────────── */
+  .masthead{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;
+    padding:12px 18px;border-bottom:1px solid var(--line);background:var(--panel)}
+  .wordmark{font-family:var(--mono);font-size:14px;font-weight:600;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--txt)}
+  .wordmark b{color:var(--accent);font-weight:600}
+  .tagline{font-size:12px;color:var(--dim);max-width:60ch}
+  .mast-right{margin-left:auto;display:flex;align-items:center;gap:14px}
+  .stat{font-family:var(--mono);font-size:11px;color:var(--dim);
+    font-variant-numeric:tabular-nums;letter-spacing:.04em}
+  .stat b{color:var(--txt);font-weight:600}
+
+  /* ── body ─────────────────────────────────────────────── */
+  .body{flex:1;display:flex;min-height:0}
+
+  .rail{width:238px;flex:none;background:var(--panel);border-right:1px solid var(--line);
+    overflow-y:auto;padding:4px 0 18px}
+  .grp{padding:14px 14px 2px}
+  .grp-t{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--dim);margin-bottom:6px}
+  .lyr{display:flex;align-items:center;gap:9px;width:100%;padding:5px 7px;border:0;
+    background:none;color:var(--txt);font:inherit;text-align:left;border-radius:5px;cursor:pointer}
+  .lyr:hover{background:var(--panel2)}
+  .lyr:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+  .box{width:12px;height:12px;flex:none;border-radius:3px;border:1.5px solid var(--coast);
+    display:grid;place-items:center}
+  .lyr[aria-pressed="true"] .box{border-color:transparent}
+  .box i{width:8px;height:8px;border-radius:2px;background:currentColor;
+    transform:scale(0);transition:transform .12s ease}
+  .lyr[aria-pressed="true"] .box i{transform:scale(1)}
+  .lyr-n{flex:1;font-size:12px;line-height:1.25}
+  .lyr-c{font-family:var(--mono);font-size:10px;color:var(--dim);font-variant-numeric:tabular-nums}
+
+  /* ── stage ────────────────────────────────────────────── */
+  .stage{flex:1;position:relative;min-width:0;background:var(--ocean)}
+  canvas{display:block;width:100%;height:100%;cursor:grab;touch-action:none}
+  canvas.drag{cursor:grabbing}
+  .zoom{position:absolute;left:14px;bottom:14px;display:flex;flex-direction:column;
+    border:1px solid var(--line);border-radius:7px;overflow:hidden;background:var(--panel);
+    box-shadow:var(--shadow)}
+  .zoom button{width:30px;height:28px;border:0;background:none;color:var(--txt);
+    font-family:var(--mono);font-size:14px;cursor:pointer}
+  .zoom button+button{border-top:1px solid var(--line)}
+  .zoom button:hover{background:var(--panel2);color:var(--accent)}
+  .prov{position:absolute;right:12px;bottom:10px;font-family:var(--mono);font-size:9.5px;
+    color:var(--dim);letter-spacing:.03em;text-align:right;line-height:1.5;pointer-events:none;
+    text-shadow:0 1px 3px var(--ocean)}
+
+  /* ── inspector ────────────────────────────────────────── */
+  .insp{width:308px;flex:none;background:var(--panel);border-left:1px solid var(--line);
+    overflow-y:auto;display:flex;flex-direction:column}
+  .insp-h{padding:13px 15px 10px;border-bottom:1px solid var(--line);position:sticky;top:0;
+    background:var(--panel);z-index:2}
+  .insp-k{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--dim)}
+  .insp-t{font-size:14px;font-weight:600;margin-top:4px;text-wrap:balance;line-height:1.3}
+  .insp-b{padding:13px 15px}
+  .hint{color:var(--dim);font-size:12px;line-height:1.6}
+
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;font-size:12px}
+  .kv dt{font-family:var(--mono);font-size:10px;color:var(--dim);letter-spacing:.04em;
+    text-transform:uppercase;padding-top:2px}
+  .kv dd{margin:0;word-break:break-word;line-height:1.45}
+
+  .close{float:right;border:1px solid var(--line);background:var(--panel2);color:var(--dim);
+    border-radius:5px;font:inherit;font-size:11px;padding:2px 8px;cursor:pointer}
+  .close:hover{color:var(--txt);border-color:var(--coast)}
+
+  /* ── leaderboard ──────────────────────────────────────── */
+  .lb{display:flex;flex-direction:column;gap:1px}
+  .row{display:grid;grid-template-columns:20px 1fr auto;gap:9px;align-items:center;
+    padding:5px 6px;border:0;background:none;color:var(--txt);font:inherit;text-align:left;
+    border-radius:5px;cursor:pointer;width:100%}
+  .row:hover{background:var(--panel2)}
+  .row:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+  .rk{font-family:var(--mono);font-size:10px;color:var(--dim);font-variant-numeric:tabular-nums;
+    text-align:right}
+  .nm{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .bar{height:3px;border-radius:2px;margin-top:3px;opacity:.9}
+  .sc{font-family:var(--mono);font-size:11px;font-variant-numeric:tabular-nums;font-weight:600}
+  .ramp{height:7px;border-radius:4px;margin:9px 0 5px;
+    background:linear-gradient(90deg,#3f5a7a,#f0a44a,#e8433f)}
+  .ramp-l{display:flex;justify-content:space-between;font-family:var(--mono);font-size:9.5px;
+    color:var(--dim)}
+  .note{margin-top:14px;padding-top:11px;border-top:1px solid var(--line);
+    font-size:11px;color:var(--dim);line-height:1.6}
+  .note b{color:var(--txt);font-weight:600}
+  .formula{font-family:var(--mono);font-size:10.5px;line-height:1.6;color:var(--txt);
+    background:var(--panel2);border:1px solid var(--line);border-radius:5px;
+    padding:7px 8px;margin:8px 0}
+
+  @media (max-width:1080px){ .insp{width:270px} .rail{width:200px} }
+  @media (max-width:860px){
+    .body{flex-direction:column}
+    .rail{width:100%;max-height:150px;border-right:0;border-bottom:1px solid var(--line)}
+    .insp{width:100%;max-height:290px;border-left:0;border-top:1px solid var(--line)}
+    .stage{min-height:300px}
+  }
+  @media (prefers-reduced-motion:reduce){ *{transition:none!important;animation:none!important} }
+</style>
+
+<div class="app">
+  <header class="masthead">
+    <div>
+      <div class="wordmark">◎ World <b>Palantir</b></div>
+      <div class="tagline">Strategic reference atlas — fixed global infrastructure and
+        information-warfare posture, drawn from published open sources.</div>
+    </div>
+    <div class="mast-right">
+      <span class="stat"><b id="s-feat">0</b> features</span>
+      <span class="stat"><b id="s-lyr">0</b> layers on</span>
+    </div>
+  </header>
+
+  <div class="body">
+    <nav class="rail" id="rail" aria-label="Map layers"></nav>
+
+    <div class="stage">
+      <canvas id="map"></canvas>
+      <div class="zoom">
+        <button id="zin"  title="Zoom in"  aria-label="Zoom in">+</button>
+        <button id="zout" title="Zoom out" aria-label="Zoom out">−</button>
+        <button id="zrst" title="Reset view" aria-label="Reset view">⌂</button>
+      </div>
+      <div class="prov">Geometry: Natural Earth 110m · Cables: TeleGeography<br>
+        Index: Oxford OII · Freedom House FOTN 2024</div>
+    </div>
+
+    <aside class="insp" id="insp" aria-live="polite"></aside>
+  </div>
+</div>
+
+<script>
+/*__DATA__*/
+
+/* ── layer catalogue ────────────────────────────────────────────────────── */
+const LAYERS=[
+ {id:"psyops",     n:"Info-War index",      g:"Influence",     k:"psy",  c:"#f0a44a"},
+ {id:"warheads",   n:"Nuclear arsenals",    g:"Strategic",     k:"pt",   c:"#ff4d4d", r:9},
+ {id:"nuclear",    n:"Nuclear sites",       g:"Strategic",     k:"pt",   c:"#35d07f"},
+ {id:"bases",      n:"Military bases",      g:"Strategic",     k:"pt",   c:"#6ea8ff"},
+ {id:"sanctions",  n:"Sanctions regimes",   g:"Strategic",     k:"pt",   c:"#b46bff", r:7},
+ {id:"chokepoints",n:"Maritime chokepoints",g:"Maritime",      k:"pt",   c:"#ff6b9d", r:7},
+ {id:"routes",     n:"Trade routes",        g:"Maritime",      k:"ln",   c:"#4bb8d8", w:1.4},
+ {id:"cables",     n:"Undersea cables",     g:"Maritime",      k:"ln",   c:"#7c6cf0", w:.7},
+ {id:"pipelines",  n:"Oil & gas pipelines", g:"Energy",        k:"ln",   c:"#e08a3c", w:1.5},
+ {id:"storage",    n:"Storage & reserves",  g:"Energy",        k:"pt",   c:"#c9a227"},
+ {id:"spaceports", n:"Spaceports",          g:"Industrial",    k:"pt",   c:"#ffa629"},
+ {id:"datacenters",n:"AI datacenters",      g:"Industrial",    k:"pt",   c:"#16c9b0"},
+ {id:"manufacturing",n:"Manufacturing",     g:"Industrial",    k:"pt",   c:"#a78bfa"},
+ {id:"tariffs",    n:"US tariffs",          g:"Economy",       k:"pt",   c:"#e8c34a", r:7},
+];
+const GROUPS=["Influence","Strategic","Maritime","Energy","Industrial","Economy"];
+const on=new Set(["psyops","chokepoints","nuclear"]);
+
+/* ── projection / view ──────────────────────────────────────────────────── */
+const cv=document.getElementById("map"), ctx=cv.getContext("2d");
+let W=0,H=0,dpr=1, zoom=1, ox=0, oy=0, worldW=0;
+
+function fit(){
+  const r=cv.getBoundingClientRect();
+  dpr=Math.min(window.devicePixelRatio||1,2);
+  W=r.width; H=r.height;
+  cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+function home(){
+  worldW=Math.min(W, H*2);          // equirectangular is 2:1 — fit the whole globe
+  zoom=1; ox=(W-worldW)/2; oy=(H-worldW/2)/2;
+}
+const px=lon=>(lon+180)/360*worldW*zoom+ox;
+const py=lat=>(90-lat)/180*(worldW/2)*zoom+oy;
+const span=()=>worldW*zoom;
+
+/* longitudes that may be visible after wrap */
+function shifts(){
+  const s=span(), out=[0];
+  if(ox>0) out.push(-s);
+  if(ox+s<W) out.push(s);
+  return out;
+}
+/* unwrap a ring/segment so it never jumps the antimeridian */
+function unwrap(pts){
+  const o=[[pts[0][0],pts[0][1]]];
+  for(let i=1;i<pts.length;i++){
+    let ln=pts[i][0]; const prev=o[i-1][0];
+    while(ln-prev>180) ln-=360;
+    while(ln-prev<-180) ln+=360;
+    o.push([ln,pts[i][1]]);
+  }
+  return o;
+}
+const UC=DATA.countries.map(c=>({n:c.n,p:c.p.map(unwrap)}));
+const UL={};
+for(const l of LAYERS) if(l.k==="ln") UL[l.id]=DATA.layers[l.id].map(f=>({t:f.t,s:f.s.map(unwrap),d:f.d}));
+
+/* ── info-war colour ramp ───────────────────────────────────────────────── */
+const mix=(a,b,t)=>a.map((v,i)=>Math.round(v+(b[i]-v)*t));
+const C0=[63,90,122], C1=[240,164,74], C2=[232,67,63];
+function ramp(i){
+  const t=Math.max(0,Math.min(1,(i-30)/70));
+  const c=t<.5?mix(C0,C1,t/.5):mix(C1,C2,(t-.5)/.5);
+  return `rgb(${c[0]},${c[1]},${c[2]})`;
+}
+
+/* ── render ─────────────────────────────────────────────────────────────── */
+let hits=[];
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+function draw(){
+  const S=shifts();
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle=css("--ocean"); ctx.fillRect(0,0,W,H);
+
+  /* graticule, clipped to the map plate */
+  const top=py(90), bot=py(-90);
+  ctx.strokeStyle=css("--grat"); ctx.lineWidth=1; ctx.beginPath();
+  for(let la=-60;la<=60;la+=30){ const y=py(la); ctx.moveTo(0,y); ctx.lineTo(W,y); }
+  for(let lo=-180;lo<=180;lo+=30){
+    for(const s of S){ const x=px(lo)+s; ctx.moveTo(x,top); ctx.lineTo(x,bot); }
+  }
+  ctx.stroke();
+  ctx.strokeStyle=css("--line"); ctx.lineWidth=1;
+  for(const s of S) ctx.strokeRect(px(-180)+s,top,span(),bot-top);
+
+  /* land */
+  const land=css("--land"), coast=css("--coast");
+  ctx.lineWidth=.7;
+  for(const s of S){
+    ctx.fillStyle=land; ctx.strokeStyle=coast;
+    ctx.beginPath();
+    for(const c of UC) for(const ring of c.p){
+      ctx.moveTo(px(ring[0][0])+s,py(ring[0][1]));
+      for(let i=1;i<ring.length;i++) ctx.lineTo(px(ring[i][0])+s,py(ring[i][1]));
+      ctx.closePath();
+    }
+    ctx.fill(); ctx.stroke();
+  }
+
+  hits=[];
+  /* line layers */
+  for(const L of LAYERS){
+    if(L.k!=="ln"||!on.has(L.id)) continue;
+    ctx.strokeStyle=L.c; ctx.lineWidth=L.w||1; ctx.globalAlpha=L.id==="cables"?.55:.8;
+    ctx.beginPath();
+    for(const s of S) for(const f of UL[L.id]) for(const seg of f.s){
+      ctx.moveTo(px(seg[0][0])+s,py(seg[0][1]));
+      for(let i=1;i<seg.length;i++) ctx.lineTo(px(seg[i][0])+s,py(seg[i][1]));
+    }
+    ctx.stroke(); ctx.globalAlpha=1;
+  }
+
+  /* point layers */
+  for(const L of LAYERS){
+    if(L.k==="ln"||!on.has(L.id)) continue;
+    for(const f of DATA.layers[L.id]){
+      const isPsy=L.k==="psy";
+      const rad=isPsy?4+ (f.i/100)*11 : (L.r||4.5);
+      const col=isPsy?ramp(f.i):L.c;
+      const y=py(f.c[1]);
+      if(y<-40||y>H+40) continue;
+      for(const s of S){
+        const x=px(f.c[0])+s;
+        if(x<-40||x>W+40) continue;
+        ctx.beginPath(); ctx.arc(x,y,rad,0,6.2832);
+        ctx.fillStyle=col; ctx.globalAlpha=isPsy?.72:.85; ctx.fill();
+        ctx.globalAlpha=1; ctx.lineWidth=isPsy?1.2:.9;
+        ctx.strokeStyle=css("--ocean"); ctx.stroke();
+        hits.push({x,y,r:Math.max(rad,6),f,L});
+      }
+    }
+  }
+}
+let raf=0;
+const paint=()=>{ if(!raf) raf=requestAnimationFrame(()=>{raf=0;draw();}); };
+
+/* ── rail ───────────────────────────────────────────────────────────────── */
+function buildRail(){
+  const rail=document.getElementById("rail"); rail.innerHTML="";
+  for(const g of GROUPS){
+    const items=LAYERS.filter(l=>l.g===g); if(!items.length) continue;
+    const box=document.createElement("div"); box.className="grp";
+    box.innerHTML=`<div class="grp-t">${g}</div>`;
+    for(const L of items){
+      const b=document.createElement("button");
+      b.className="lyr"; b.type="button";
+      b.setAttribute("aria-pressed", on.has(L.id)?"true":"false");
+      b.style.color=L.c;
+      b.innerHTML=`<span class="box"><i></i></span>
+        <span class="lyr-n" style="color:var(--txt)">${L.n}</span>
+        <span class="lyr-c">${DATA.layers[L.id].length}</span>`;
+      b.onclick=()=>{
+        on.has(L.id)?on.delete(L.id):on.add(L.id);
+        b.setAttribute("aria-pressed",on.has(L.id)?"true":"false");
+        stats(); paint();
+      };
+      box.appendChild(b);
+    }
+    rail.appendChild(box);
+  }
+}
+function stats(){
+  let n=0; for(const id of on) n+=DATA.layers[id].length;
+  document.getElementById("s-feat").textContent=n.toLocaleString();
+  document.getElementById("s-lyr").textContent=on.size;
+}
+
+/* ── inspector ──────────────────────────────────────────────────────────── */
+const insp=document.getElementById("insp");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function leaderboard(){
+  const rows=DATA.layers.psyops.map(p=>`
+    <button class="row" data-c="${p.t}">
+      <span class="rk">${p.r}</span>
+      <span><span class="nm">${esc(p.t)}</span>
+        <span class="bar" style="display:block;width:${p.i}%;background:${ramp(p.i)}"></span></span>
+      <span class="sc" style="color:${ramp(p.i)}">${p.i}</span>
+    </button>`).join("");
+  insp.innerHTML=`
+    <div class="insp-h">
+      <div class="insp-k">Composite ranking</div>
+      <div class="insp-t">Information-Warfare Index</div>
+    </div>
+    <div class="insp-b">
+      <div class="ramp"></div>
+      <div class="ramp-l"><span>30 lower</span><span>capability</span><span>higher 100</span></div>
+      <div class="formula">0.40·capacity + 0.25·info-control + 0.10·foreign-ops</div>
+      <div class="lb">${rows}</div>
+      <div class="note"><b>How to read this.</b> An open composite of published sources —
+        Oxford OII cyber-troop capacity, Freedom House <i>Freedom on the Net</i> 2024
+        (inverted), and documented foreign influence operations. There is no official
+        PsyOps index; this is an analytical estimate, not an authoritative score.
+        Capability is not intent. Countries the sources did not assess carry null inputs
+        and a reduced score.</div>
+      <div class="note"><b>This atlas is the fixed half.</b> Everything here is real
+        published reference data. The live feeds — flights, satellites, vessels, conflict
+        events, news, and the index's fourth term (live info-ops reporting) — need
+        outbound network access, which a published page cannot have. Run the full
+        application for those.</div>
+    </div>`;
+  insp.querySelectorAll(".row").forEach(b=>b.onclick=()=>{
+    const p=DATA.layers.psyops.find(x=>x.t===b.dataset.c);
+    if(p) detail({f:p,L:LAYERS[0]});
+  });
+}
+
+function detail({f,L}){
+  let dl="";
+  if(L.k==="psy"){
+    dl=`<dt>Index</dt><dd style="color:${ramp(f.i)};font-weight:600">${f.i} / 100 · rank ${f.r}</dd>
+        <dt>Cyber-troop capacity</dt><dd>${f.cap??"not assessed"}</dd>
+        <dt>Freedom on the Net</dt><dd>${f.fotn??"not assessed"}</dd>
+        <dt>Foreign ops</dt><dd>${f.fo?"documented":"not documented"}</dd>
+        ${f.note?`<dt>Notes</dt><dd>${esc(f.note)}</dd>`:""}
+        ${f.src?`<dt>Sources</dt><dd>${esc(f.src)}</dd>`:""}`;
+  }else{
+    for(const [k,v] of Object.entries(f.d||{}))
+      if(v!==null&&v!=="") dl+=`<dt>${esc(k.replace(/_/g," "))}</dt><dd>${esc(v)}</dd>`;
+    dl+=`<dt>Position</dt><dd>${f.c[1].toFixed(2)}, ${f.c[0].toFixed(2)}</dd>`;
+  }
+  insp.innerHTML=`
+    <div class="insp-h">
+      <button class="close" id="bk">← back</button>
+      <div class="insp-k" style="color:${L.k==="psy"?ramp(f.i):L.c}">${esc(L.n)}</div>
+      <div class="insp-t">${esc(f.t)}</div>
+    </div>
+    <div class="insp-b"><dl class="kv">${dl}</dl></div>`;
+  document.getElementById("bk").onclick=leaderboard;
+}
+
+/* ── interaction ────────────────────────────────────────────────────────── */
+let drag=null, moved=0;
+cv.addEventListener("pointerdown",e=>{
+  drag={x:e.clientX,y:e.clientY}; moved=0; cv.classList.add("drag");
+  cv.setPointerCapture(e.pointerId);
+});
+cv.addEventListener("pointermove",e=>{
+  if(!drag) return;
+  const dx=e.clientX-drag.x, dy=e.clientY-drag.y;
+  moved+=Math.abs(dx)+Math.abs(dy);
+  ox+=dx; oy+=dy; drag={x:e.clientX,y:e.clientY};
+  clampY(); paint();
+});
+cv.addEventListener("pointerup",e=>{
+  cv.classList.remove("drag"); drag=null;
+  if(moved>6) return;
+  const r=cv.getBoundingClientRect(), mx=e.clientX-r.left, my=e.clientY-r.top;
+  let best=null,bd=1e9;
+  for(const h of hits){
+    const d=(h.x-mx)**2+(h.y-my)**2;
+    if(d<bd&&d<(h.r+5)**2){bd=d;best=h;}
+  }
+  if(best) detail(best);
+});
+cv.addEventListener("wheel",e=>{
+  e.preventDefault();
+  const r=cv.getBoundingClientRect(), mx=e.clientX-r.left, my=e.clientY-r.top;
+  zoomAt(mx,my,Math.exp(-e.deltaY*.0016));
+},{passive:false});
+
+function zoomAt(mx,my,k){
+  const z0=zoom; zoom=Math.max(1,Math.min(zoom*k,14));
+  const f=zoom/z0;
+  ox=mx-(mx-ox)*f; oy=my-(my-oy)*f;
+  clampY(); paint();
+}
+function clampY(){
+  const h=span()/2;
+  if(h<=H) oy=(H-h)/2; else oy=Math.max(H-h,Math.min(0,oy));
+  const s=span();
+  if(s<=W) ox=(W-s)/2;
+}
+document.getElementById("zin").onclick =()=>zoomAt(W/2,H/2,1.5);
+document.getElementById("zout").onclick=()=>zoomAt(W/2,H/2,1/1.5);
+document.getElementById("zrst").onclick=()=>{home();paint();};
+
+addEventListener("resize",()=>{ fit(); home(); paint(); });
+
+/* ── boot ───────────────────────────────────────────────────────────────── */
+fit(); home(); buildRail(); stats(); leaderboard(); paint();
+new MutationObserver(paint).observe(document.documentElement,
+  {attributes:true,attributeFilter:["data-theme"]});
+matchMedia("(prefers-color-scheme:dark)").addEventListener("change",paint);
+</script>
