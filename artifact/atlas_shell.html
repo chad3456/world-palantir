@@ -45,6 +45,12 @@
   .stat{font-family:var(--mono);font-size:11px;color:var(--dim);
     font-variant-numeric:tabular-nums;letter-spacing:.04em}
   .stat b{color:var(--txt);font-weight:600}
+  .export{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--txt);
+    background:var(--panel2);border:1px solid var(--line);border-radius:5px;
+    padding:5px 10px;cursor:pointer}
+  .export:hover{border-color:var(--accent);color:var(--accent)}
+  .export:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .export[disabled]{opacity:.55;cursor:default}
 
   /* ── body ─────────────────────────────────────────────── */
   .body{flex:1;display:flex;min-height:0}
@@ -145,6 +151,7 @@
     <div class="mast-right">
       <span class="stat"><b id="s-feat">0</b> features</span>
       <span class="stat"><b id="s-lyr">0</b> layers on</span>
+      <button class="export" id="exp" hidden>⭳ Export GeoJSON</button>
     </div>
   </header>
 
@@ -369,11 +376,12 @@ function leaderboard(){
         PsyOps index; this is an analytical estimate, not an authoritative score.
         Capability is not intent. Countries the sources did not assess carry null inputs
         and a reduced score.</div>
-      <div class="note"><b>This atlas is the fixed half.</b> Everything here is real
-        published reference data. The live feeds — flights, satellites, vessels, conflict
-        events, news, and the index's fourth term (live info-ops reporting) — need
-        outbound network access, which a published page cannot have. Run the full
-        application for those.</div>
+      <div class="note"><b>What this is.</b> Real published reference data — the fixed
+        half of the system. It is complete and current as curated, but it is not a live
+        feed: a published page is sandboxed without network access, so flights,
+        satellites, vessels, conflict events, news and the index's fourth term (live
+        info-ops reporting) cannot run here. Those need the full application. Nothing on
+        this map is simulated to stand in for them.</div>
     </div>`;
   insp.querySelectorAll(".row").forEach(b=>b.onclick=()=>{
     const p=DATA.layers.psyops.find(x=>x.t===b.dataset.c);
@@ -452,6 +460,69 @@ document.getElementById("zout").onclick=()=>zoomAt(W/2,H/2,1/1.5);
 document.getElementById("zrst").onclick=()=>{home();paint();};
 
 addEventListener("resize",()=>{ fit(); home(); paint(); });
+
+/* ── export (downloads capability) ──────────────────────────────────────── */
+function activeGeoJSON(){
+  const feats=[];
+  for(const L of LAYERS){
+    if(!on.has(L.id)) continue;
+    if(L.k==="ln"){
+      for(const f of DATA.layers[L.id]) feats.push({type:"Feature",
+        geometry:{type:"MultiLineString",coordinates:f.s},
+        properties:Object.assign({name:f.t,layer:L.n},f.d||{})});
+    }else if(L.k==="psy"){
+      for(const p of DATA.layers.psyops) feats.push({type:"Feature",
+        geometry:{type:"Point",coordinates:p.c},
+        properties:{name:p.t,layer:L.n,index:p.i,rank:p.r,cyber_troop_capacity:p.cap,
+          freedom_on_net:p.fotn,foreign_influence_ops:p.fo,notes:p.note,sources:p.src}});
+    }else{
+      for(const f of DATA.layers[L.id]) feats.push({type:"Feature",
+        geometry:{type:"Point",coordinates:f.c},
+        properties:Object.assign({name:f.t,layer:L.n},f.d||{})});
+    }
+  }
+  return {type:"FeatureCollection",
+    metadata:{source:"World Palantir strategic atlas",
+      note:"Curated open-source reference data. See layer sources.",
+      exported:new Date().toISOString()},
+    features:feats};
+}
+
+const expBtn=document.getElementById("exp");
+const EXP_LABEL="⭳ Export GeoJSON";
+let flashTimer=0;
+function flash(msg){
+  clearTimeout(flashTimer);
+  expBtn.textContent=msg;
+  flashTimer=setTimeout(()=>{ expBtn.textContent=EXP_LABEL; },1800);
+}
+
+const dlApi=(window.claude&&window.claude.downloads)||null;
+if(dlApi){
+  expBtn.hidden=false;
+  expBtn.onclick=async()=>{
+    if(!on.size){ flash("Turn on a layer first"); return; }
+    clearTimeout(flashTimer);
+    expBtn.disabled=true; expBtn.textContent="Saving…";
+    try{
+      await dlApi.save({filename:"world-palantir-layers.json",
+        data:JSON.stringify(activeGeoJSON(),null,1)});
+      flash("Saved");
+    }catch(err){
+      const code=err&&err.code;
+      if(code==="declined") flash("Export cancelled");
+      else if(code==="rate_limited") flash("Try again shortly");
+      else if(code==="too_large") flash("Too large — fewer layers");
+      else if(code==="unavailable"||code==="not_granted"||
+              code==="capability_disabled"||code==="capability_removed"){
+        expBtn.hidden=true;
+      }else flash("Export failed");
+    }finally{
+      expBtn.disabled=false;
+      if(expBtn.textContent==="Saving…") expBtn.textContent=EXP_LABEL;
+    }
+  };
+}
 
 /* ── boot ───────────────────────────────────────────────────────────────── */
 fit(); home(); buildRail(); stats(); leaderboard(); paint();
